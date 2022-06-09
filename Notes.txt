@@ -1,0 +1,5 @@
+Configure args:
+	--disable-dependency-tracking --disable-shared --disable-sspi --disable-odbc --disable-apps --disable-server --disable-pool --enable-msdblib --enable-sybase-compat
+
+Get freetds version:
+	grep "%define\sversion" freetds-src/freetds.spec
