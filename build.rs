@@ -7,6 +7,7 @@ fn main() {
 
     let src_dir = env::current_dir().unwrap();
     let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
+    let prefix = out_dir.join("prefix");
 
     let status = Command::new(src_dir.join("freetds-src").join("configure"))
         .arg("--disable-dependency-tracking")
@@ -16,7 +17,7 @@ fn main() {
         .arg("--disable-apps")
         .arg("--disable-server")
         .arg("--disable-pool")
-        .arg(&format!("--prefix={}/prefix", out_dir.display()))
+        .arg(&format!("--prefix={}", prefix.display()))
         .arg("--enable-sybase-compat")
         .current_dir(&out_dir)
         .status()
@@ -45,7 +46,7 @@ fn main() {
 
     let bindings = bindgen::builder()
         .header("freetds.h")
-        .clang_arg(format!("-I{}", out_dir.join("prefix/include").display()))
+        .clang_arg(format!("-I{}", prefix.join("include").display()))
         .layout_tests(false)
         .default_macro_constant_type(bindgen::MacroTypeVariation::Signed)
         .ctypes_prefix("libc")
@@ -58,11 +59,7 @@ fn main() {
         .write_to_file(out_dir.join("bindings.rs"))
         .expect("bindgen failed");
 
-    println!("cargo:rustc-link-search={}", out_dir.join("prefix/lib").display());
-
-    println!("cargo:rustc-link-lib=tds");
+    println!("cargo:rustc-link-search={}", prefix.join("lib").display());
     println!("cargo:rustc-link-lib=ct");
     println!("cargo:rustc-link-lib=sybdb");
-
-    println!("Here");
 }
