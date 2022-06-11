@@ -16,7 +16,7 @@ fn main() {
         .arg("--disable-apps")
         .arg("--disable-server")
         .arg("--disable-pool")
-        /*.arg("--enable-msdblib")*/
+        .arg(&format!("--prefix={}/prefix", out_dir.display()))
         .arg("--enable-sybase-compat")
         .current_dir(&out_dir)
         .status()
@@ -34,27 +34,35 @@ fn main() {
         panic!("make failed");
     }
 
+    let status = make_cmd::gnu_make()
+        .arg("install")
+        .current_dir(&out_dir)
+        .status()
+        .expect("make install failed");
+    if !status.success() {
+        panic!("make install failed");
+    }
+
     let bindings = bindgen::builder()
         .header("freetds.h")
-        .clang_arg("-Ifreetds-src/include")
-        .clang_arg(format!("-I{}", out_dir.join("include").display()))
+        .clang_arg(format!("-I{}", out_dir.join("prefix/include").display()))
         .layout_tests(false)
-        .parse_callbacks(Box::new(bindgen::CargoCallbacks))
         .default_macro_constant_type(bindgen::MacroTypeVariation::Signed)
         .ctypes_prefix("libc")
         .allowlist_function("cs_.*|ct_.*")
         .allowlist_var("MSDBLIB|CTLIB|CS_.*|BLK_.*")
+        .allowlist_type("CS_.*")
         .generate()
         .expect("bindgen failed");
     bindings
         .write_to_file(out_dir.join("bindings.rs"))
         .expect("bindgen failed");
 
-    println!("cargo:rustc-link-search={}", out_dir.join("src/tds/.libs").display());
-    println!("cargo:rustc-link-search={}", out_dir.join("src/ctlib/.libs").display());
-    println!("cargo:rustc-link-search={}", out_dir.join("src/dblib/.libs").display());
+    println!("cargo:rustc-link-search={}", out_dir.join("prefix/lib").display());
 
     println!("cargo:rustc-link-lib=tds");
     println!("cargo:rustc-link-lib=ct");
     println!("cargo:rustc-link-lib=sybdb");
+
+    println!("Here");
 }
