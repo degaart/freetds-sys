@@ -53,6 +53,10 @@ fn main() {
         .allowlist_function("cs_.*|ct_.*")
         .allowlist_var("MSDBLIB|CTLIB|CS_.*|BLK_.*")
         .allowlist_type("CS_.*")
+        .default_macro_constant_type(bindgen::MacroTypeVariation::Signed)
+        .derive_default(true)
+        .derive_copy(true)
+        .derive_debug(true)
         .generate()
         .expect("bindgen failed");
     bindings
@@ -62,4 +66,8 @@ fn main() {
     println!("cargo:rustc-link-search={}", prefix.join("lib").display());
     println!("cargo:rustc-link-lib=ct");
     println!("cargo:rustc-link-lib=sybdb");
+
+    println!("cargo:root={}", prefix.display());
+    println!("cargo:include={}", prefix.join("include").display());
+    println!("cargo:libdir={}", prefix.join("lib").display());
 }
