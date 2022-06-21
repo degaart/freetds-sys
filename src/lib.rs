@@ -2,7 +2,22 @@
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
 
+use std::fmt::Display;
+
 include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
+
+impl Display for CS_DATEREC {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f,
+            "{:04}/{:02}/{:02} {:02}:{:02}:{:02}",
+            self.dateyear,
+            self.datemonth,
+            self.datedmonth,
+            self.datehour,
+            self.dateminute,
+            self.datesecond)
+    }
+}
 
 #[cfg(test)]
 mod tests {
