@@ -57,6 +57,7 @@ fn main() {
         .derive_default(true)
         .derive_copy(true)
         .derive_debug(true)
+        .derive_eq(true)
         .generate()
         .expect("bindgen failed");
     bindings
