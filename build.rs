@@ -1,15 +1,31 @@
 use std::process::Command;
 use std::{env, path::PathBuf};
+use std::fs;
 
 fn main() {
-    println!("cargo:rerun-if-changed=freetds-src");
+    println!("cargo:rerun-if-changed=freetds-1.3.12.tar.gz");
     println!("cargo:rerun-if-changed=freetds.h");
 
     let src_dir = env::current_dir().unwrap();
     let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
     let prefix = out_dir.join("prefix");
 
-    let status = Command::new(src_dir.join("freetds-src").join("configure"))
+    let status = Command::new("tar")
+        .arg("-zxf")
+        .arg(src_dir.join("freetds-1.3.12.tar.gz"))
+        .current_dir(&out_dir)
+        .status()
+        .expect("extract failed");
+    if !status.success() {
+        panic!("extract failed");
+    }
+
+    let build_dir = out_dir.join("build");
+    if !build_dir.exists() {
+        fs::create_dir(&build_dir).unwrap();
+    }
+
+    let status = Command::new(out_dir.join("freetds-1.3.12").join("configure"))
         .arg("--disable-dependency-tracking")
         .arg("--disable-shared")
         .arg("--disable-sspi")
@@ -19,7 +35,7 @@ fn main() {
         .arg("--disable-pool")
         .arg(&format!("--prefix={}", prefix.display()))
         .arg("--enable-sybase-compat")
-        .current_dir(&out_dir)
+        .current_dir(&build_dir)
         .status()
         .expect("configure failed");
     if !status.success() {
@@ -28,7 +44,7 @@ fn main() {
 
     let status = make_cmd::gnu_make()
         .arg(&format!("-j{}", num_cpus::get()))
-        .current_dir(&out_dir)
+        .current_dir(&build_dir)
         .status()
         .expect("make failed");
     if !status.success() {
@@ -37,7 +53,7 @@ fn main() {
 
     let status = make_cmd::gnu_make()
         .arg("install")
-        .current_dir(&out_dir)
+        .current_dir(&build_dir)
         .status()
         .expect("make install failed");
     if !status.success() {
