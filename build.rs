@@ -35,6 +35,7 @@ fn main() {
         .arg("--disable-pool")
         .arg(&format!("--prefix={}", prefix.display()))
         .arg("--enable-sybase-compat")
+        .env("CFLAGS", "-fPIC")
         .current_dir(&build_dir)
         .status()
         .expect("configure failed");
