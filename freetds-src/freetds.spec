@@ -1,5 +1,5 @@
 %define	name	freetds
-%define	version	1.3.11
+%define	version	1.3.12
 
 # compute some additional dependency from vendor name
 # 

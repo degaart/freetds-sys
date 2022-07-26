@@ -1,4 +1,12 @@
 Author: Frediano Ziglio <freddy77@gmail.com>
+Date:   Sat Jun 11 07:53:44 2022 +0100
+
+    Fix static compile with readline library
+
+    In static compiling order is more important, library depending
+    on others should came first, not after.
+
+Author: Frediano Ziglio <freddy77@gmail.com>
 Date:   Tue May 31 07:40:41 2022 +0100
 
     tds: Fix for change in OpenSSL 1.1.1l

@@ -22,11 +22,11 @@
 
 /* $Id: 9640daf619734147e3b5ff6a1dad56ad305ffa51 $ */
 
-#define TDS_VERSION_NO "freetds v1.3.11"
+#define TDS_VERSION_NO "freetds v1.3.12"
 
 #define TDS_VERSION_MAJOR 1
 #define TDS_VERSION_MINOR 3
-#define TDS_VERSION_SUBVERSION 11
-#define TDS_VERSION_BUILD_NUMBER 517
+#define TDS_VERSION_SUBVERSION 12
+#define TDS_VERSION_BUILD_NUMBER 528
 
 #endif
