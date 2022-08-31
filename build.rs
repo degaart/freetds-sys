@@ -25,7 +25,8 @@ fn main() {
         fs::create_dir(&build_dir).unwrap();
     }
 
-    let status = Command::new(out_dir.join("freetds-1.3.12").join("configure"))
+    let mut command = Command::new(out_dir.join("freetds-1.3.12").join("configure"));
+    command
         .arg("--disable-dependency-tracking")
         .arg("--disable-shared")
         .arg("--disable-sspi")
@@ -34,8 +35,19 @@ fn main() {
         .arg("--disable-server")
         .arg("--disable-pool")
         .arg(&format!("--prefix={}", prefix.display()))
-        .arg("--enable-sybase-compat")
-        .env("CFLAGS", "-fPIC")
+        .arg("--enable-sybase-compat");
+
+    let mut cflags = "-fPIC".to_string();
+    if env::var("HOST").unwrap_or("".to_string()) != env::var("TARGET").unwrap_or("".to_string()) {
+        if env::var("CARGO_CFG_TARGET_OS").unwrap() == "macos" {
+            cflags.push_str(&format!(" -arch {}", env::var("CARGO_CFG_TARGET_ARCH").unwrap()));
+        } else {
+            command.arg(&format!("--host={}", env::var("TARGET").unwrap()));
+        }
+    }
+
+    let status = command
+        .env("CFLAGS", &cflags)
         .current_dir(&build_dir)
         .status()
         .expect("configure failed");
