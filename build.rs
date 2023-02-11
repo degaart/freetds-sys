@@ -35,7 +35,8 @@ fn main() {
         .arg("--disable-server")
         .arg("--disable-pool")
         .arg(&format!("--prefix={}", prefix.display()))
-        .arg("--enable-sybase-compat");
+        .arg("--enable-sybase-compat")
+        .arg("--without-openssl");
 
     let mut cflags = "-fPIC".to_string();
     if env::var("HOST").unwrap_or("".to_string()) != env::var("TARGET").unwrap_or("".to_string()) {
